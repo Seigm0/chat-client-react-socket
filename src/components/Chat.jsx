@@ -7,13 +7,16 @@ import {
 } from "../socket/socket-client";
 
 const Chat = () => {
-  const rooms = ["A", "B", "C"];
-  const [room, setRoom] = useState(rooms[0]);
+  const rooms = ["1", "2", "3"];
+  const [newRooms, setNewRooms] = useState([])
+  const [room, setRoom] = useState("1");
   const [message, setMessage] = useState("");
   const [chat, setChat] = useState([]);
+  const [username, setUsername] = useState("");
+  const [usernameActive, setUsernameActive] = useState(false);
 
   useEffect(() => {
-    if (room) initiateSocket(room);
+    initiateSocket(room);
 
     subscribeToChat((err, data) => {
       if (err) return;
@@ -28,8 +31,23 @@ const Chat = () => {
 
   return (
     <div>
+      <h1>Write your name</h1>
+      {
+        !usernameActive ?
+        <>
+          <input
+            type="text"
+            name="username"
+            
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+          <button onClick={() => setUsernameActive(true)} disabled={usernameActive}>Send</button>
+        </>
+        : <h1>{username}</h1>
+      }
       <h1>Room: {room}</h1>
-      {rooms.map((r, i) => (
+      {newRooms.map((r, i) => (
         <button onClick={() => setRoom(r)} key={i}>
           {r}
         </button>
@@ -41,11 +59,11 @@ const Chat = () => {
         value={message}
         onChange={(e) => setMessage(e.target.value)}
       />
-      <button onClick={() => sendMessage(room, message)}>Send</button>
+      <button onClick={() => sendMessage(room, message, username)}>Send</button>
       {chat.map((m, i) => (
         <div key={i}>
-          <p>{m.username}</p>
-          <p>{m.message}</p>
+          <p>{m.roomId}</p>
+          <p>{m.driverLocation.latitude}</p>
         </div>
       ))}
     </div>
